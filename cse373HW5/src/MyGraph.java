@@ -90,6 +90,7 @@ public class MyGraph implements Graph {
 	 */
 	@Override
 	public Collection<Vertex> vertices() {
+		// Create and return a copy of the vertices to preserve the local copy
 		Collection<Vertex> verticesCopy = new ArrayList<Vertex>();
 		for (Vertex curVertex : vertices) {
 			verticesCopy.add(new Vertex(curVertex.getLabel()));
@@ -104,6 +105,7 @@ public class MyGraph implements Graph {
 	 */
 	@Override
 	public Collection<Edge> edges() {
+		// Create and return a copy of the edges to preserve local copy
 		Collection<Edge> edgesCopy = new ArrayList<Edge>();
 		for (Edge curEdge : edges) {
 			edgesCopy.add(new Edge(curEdge.getSource(), curEdge.getDestination(), curEdge.getWeight()));
@@ -124,9 +126,13 @@ public class MyGraph implements Graph {
 	 */
 	@Override
 	public Collection<Vertex> adjacentVertices(Vertex v) {
-
-		// YOUR CODE HERE
-		return null;
+		// Throw an error if the vertex does not exist
+		if (!adjacentVertices.containsKey(v)) {
+			throw new IllegalArgumentException();
+		}
+		
+		// Get the values adjacent to vertex v and return them
+		return adjacentVertices.get(v);
 	}
 
 	/**
@@ -144,9 +150,29 @@ public class MyGraph implements Graph {
 	 */
 	@Override
 	public int edgeCost(Vertex a, Vertex b) {
-
-		// YOUR CODE HERE
-		return 0;
+		// Make sure vertices exist
+		if (!vertices.contains(a) || !vertices.contains(b)) {
+			throw new IllegalArgumentException();
+		}
+		// Initialize the cost
+		int cost = -1;
+		
+		// Make sure that b is adjacent to a
+		if (!adjacentVertices.get(a).contains(b)) {
+			// Return default value of cost, -1
+			return cost;
+		
+		// Analyze list of edges to find the correct edge.
+		} else {
+			for (Edge curEdge : edges) {
+				// Set cost to the edge weight if source matches a, destination matches b
+				if (curEdge.getSource().equals(a) && curEdge.getDestination().equals(b)) {
+					cost = curEdge.getWeight();
+				}
+			}
+			// Return the cost of going from a to b
+			return cost;
+		}
 	}
 
 	/**
@@ -164,11 +190,11 @@ public class MyGraph implements Graph {
 	 * @throws IllegalArgumentException
 	 *             if a or b does not exist.
 	 */
-	public Path shortestPath(Vertex a, Vertex b) {
+	/*public Path shortestPath(Vertex a, Vertex b) {
 
 		// YOUR CODE HERE (you might comment this out this method while doing
 		// Part 1)
 		return null;
-	}
+	}*/
 
 }
