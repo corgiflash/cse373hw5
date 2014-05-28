@@ -155,11 +155,11 @@ public class MyGraph implements Graph {
 			throw new IllegalArgumentException();
 		}
 		// Initialize the cost
-		int cost = -1;
+		int cost = 0;
 		
 		// Make sure that b is adjacent to a
 		if (!adjacentVertices.get(a).contains(b)) {
-			// Return default value of cost, -1
+			// Return default value of cost, 0
 			return cost;
 		
 		// Analyze list of edges to find the correct edge.
@@ -195,6 +195,8 @@ public class MyGraph implements Graph {
 		if (!vertices.contains(a) || !vertices.contains(b)) {
 			throw new IllegalArgumentException();
 		}
+		
+		// Find a and b in the local vertex list
 		for(Vertex curVertex : vertices) {
 			if(curVertex.equals(a)){
 				a = curVertex;
@@ -210,19 +212,31 @@ public class MyGraph implements Graph {
 			return new Path(shortList, 0);
 		}
 		
+		// Find the shortest path using dijkstra's algorithm
 		dijkstra(a);
 		
+		// Create a list to hold the shortest path
 		List<Vertex> shortList = new ArrayList<Vertex>();
-		Vertex temp = b;
 		
+		// Traverse through the shortest path in the vertex objects until
+		// the beginning vertex is reached.
+		Vertex temp = b;
 		while(!temp.equals(a)) {
+			// Return a null path if there is a dead end
 			if(temp.getPath() == null) {
 				return null;
 			}
+			// Add the vertex to the shortest path
 			shortList.add(temp);
+			
+			// Go to the next vertex
 			temp = temp.getPath();
 		}
 		
+		// B's distance field will contain the total path cost
+		int pathLen = b.getDistance();
+		
+		// Reset all vertex fields for the next runthrough
 		for (Vertex curVertex : vertices) {
 			curVertex.setCost(Integer.MAX_VALUE);
 			curVertex.setDistance(Integer.MAX_VALUE);
@@ -230,7 +244,8 @@ public class MyGraph implements Graph {
 			curVertex.setPath(null);
 		}
 		
-		return new Path(shortList, b.getDistance());
+		// Create a new path and return it
+		return new Path(shortList, pathLen);
 	}
 	
 	private void dijkstra (Vertex start) {

@@ -36,9 +36,34 @@ public class FindPaths {
 				System.exit(1);
 			}
 			
+			// Get the shortest path
 			Path shortestPath = g.shortestPath(a, b);
-			System.out.println(shortestPath.vertices);
 			
+			// If it is impossible, print an error
+			if (shortestPath == null) {
+				System.out.println("does not exist");
+				
+			// Print the path and cost
+			} else {
+				// Initial path information
+				System.out.println("Shortest path from "+a.getLabel() + " to "+b.getLabel()+":");
+				
+				// Only one thing to print if start and end are equal
+				if (shortestPath.vertices.size() == 1) {
+					System.out.print(a.getLabel());
+					
+				// Print through path list backwards to get correct order in output
+				} else {
+					for (int i = shortestPath.vertices.size() - 1; i >= 0; i--) {
+						Vertex myVertex = shortestPath.vertices.get(i);
+						
+						System.out.print(" " + myVertex.getLabel());
+					}
+				}
+				// Print the cost of the path
+				System.out.println();
+				System.out.println(shortestPath.cost);
+			}
 		}
 	}
 
