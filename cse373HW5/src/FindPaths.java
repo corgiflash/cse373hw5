@@ -36,8 +36,9 @@ public class FindPaths {
 				System.exit(1);
 			}
 			
-			// YOUR CODE HERE: call shortestPath and print
-			// out the result
+			Path shortestPath = g.shortestPath(a, b);
+			System.out.println(shortestPath.vertices);
+			
 		}
 	}
 

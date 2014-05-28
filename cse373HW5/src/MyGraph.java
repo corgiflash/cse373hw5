@@ -49,7 +49,7 @@ public class MyGraph implements Graph {
 		
 		// Copy over all vertices
 		for (Vertex curVertex : v) {
-			vertices.add(new Vertex(curVertex.getLabel()));
+			vertices.add(new Vertex(curVertex.getLabel(), curVertex.getPath(), curVertex.getDistance()));
 		}
 		
 		// Copy edges and link to existing vertices
@@ -93,7 +93,7 @@ public class MyGraph implements Graph {
 		// Create and return a copy of the vertices to preserve the local copy
 		Collection<Vertex> verticesCopy = new ArrayList<Vertex>();
 		for (Vertex curVertex : vertices) {
-			verticesCopy.add(new Vertex(curVertex.getLabel()));
+			verticesCopy.add(new Vertex(curVertex.getLabel(), curVertex.getPath(), curVertex.getDistance()));
 		}
 		return verticesCopy;
 	}
@@ -190,11 +190,84 @@ public class MyGraph implements Graph {
 	 * @throws IllegalArgumentException
 	 *             if a or b does not exist.
 	 */
-	/*public Path shortestPath(Vertex a, Vertex b) {
-
-		// YOUR CODE HERE (you might comment this out this method while doing
-		// Part 1)
-		return null;
-	}*/
-
+	public Path shortestPath(Vertex a, Vertex b) {
+		// Check if vertices exist
+		if (!vertices.contains(a) || !vertices.contains(b)) {
+			throw new IllegalArgumentException();
+		}
+		for(Vertex curVertex : vertices) {
+			if(curVertex.equals(a)){
+				a = curVertex;
+			} else if(curVertex.equals(b)) {
+				b = curVertex;
+			}	
+		}
+		
+		// Check simplest case when begin point and end point are the same
+		if(a.equals(b)){
+			List<Vertex> shortList = new ArrayList<Vertex>();
+			shortList.add(a);
+			return new Path(shortList, 0);
+		}
+		
+		dijkstra(a);
+		
+		List<Vertex> shortList = new ArrayList<Vertex>();
+		Vertex temp = b;
+		
+		while(!temp.equals(a)) {
+			if(temp.getPath() == null) {
+				return null;
+			}
+			shortList.add(temp);
+			temp = temp.getPath();
+		}
+		return new Path(shortList, b.getDistance());
+	}
+	
+	private void dijkstra (Vertex start) {
+		Collection<Vertex> vList = new ArrayList<Vertex>();
+		
+		for (Vertex curVertex: vertices) {
+			curVertex.setPath(null);
+			curVertex.setKnown(false);
+			if(curVertex.getLabel().equals(start.getLabel())) {
+				curVertex.setDistance(0);
+				vList.add(curVertex);
+			}
+		}
+		
+		while(!vList.isEmpty()) {
+			Vertex v = smallestDist(vList);
+			if(v == null) {
+				
+			}
+			vList.remove(v);
+			v.setKnown(true);
+			for(Vertex w : adjacentVertices.get(v)) {
+				if(!w.getKnown()) {
+					int costVW = edgeCost(v,w);
+					
+					if((v.getDistance() + costVW) < w.getDistance()) {
+						w.setDistance(v.getDistance() + costVW);
+						w.setPath(v);
+					}
+				}
+			}
+		}
+	
+	}
+	
+	// Returns the vertex from the given vertex list that is shortest distance away
+	private Vertex smallestDist (Collection<Vertex> vList) {
+    	int min = Integer.MAX_VALUE;
+		Vertex v = null;
+    	for(Vertex curVertex: vList) {
+			if (curVertex.getDistance() < min) {
+				min = curVertex.getDistance();
+				v = curVertex;
+			}
+		}
+    	return v;
+	}
 }

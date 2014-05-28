@@ -5,7 +5,9 @@ public class Vertex {
 	// label attached to this vertex
 	private String label;
 	private int cost;
-	boolean known;
+	private boolean known;
+	private Vertex path;
+	private int distance;
 
 	/**
 	 * Construct a new vertex
@@ -13,12 +15,20 @@ public class Vertex {
 	 * @param label
 	 *            the label attached to this vertex
 	 */
+	
 	public Vertex(String label) {
+		this(label, null, Integer.MAX_VALUE);
+	}
+	
+
+	public Vertex(String label, Vertex path, int distance) {
 		if (label == null)
 			throw new IllegalArgumentException("null");
 		this.label = label;
-		this.cost = 0;
+		this.cost = Integer.MAX_VALUE;
 		this.known = false;
+		this.path = path;
+		this. distance = distance;
 	}
 
 	/**
@@ -30,6 +40,23 @@ public class Vertex {
 		return label;
 	}
 	
+	public int getCost() {
+		return cost;
+	}
+	
+	public boolean getKnown() {
+		return known;
+	}
+	
+	public Vertex getPath() {
+		return path;
+	}
+	
+	public int getDistance() {
+		return distance;
+	}
+	
+	
 	public void setCost(int newCost) {
 		cost = newCost;
 	}
@@ -38,12 +65,12 @@ public class Vertex {
 		known = newKnown;
 	}
 	
-	public int getCost() {
-		return cost;
-	}
+	public void setPath(Vertex newPath) {
+		path = newPath;
+	}	
 
-	public boolean getKnown() {
-		return known;
+	public void setDistance(int newDistance) {
+		distance = newDistance;
 	}
 	
 	/**
