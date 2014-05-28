@@ -222,6 +222,14 @@ public class MyGraph implements Graph {
 			shortList.add(temp);
 			temp = temp.getPath();
 		}
+		
+		for (Vertex curVertex : vertices) {
+			curVertex.setCost(Integer.MAX_VALUE);
+			curVertex.setDistance(Integer.MAX_VALUE);
+			curVertex.setKnown(false);
+			curVertex.setPath(null);
+		}
+		
 		return new Path(shortList, b.getDistance());
 	}
 	
@@ -230,17 +238,16 @@ public class MyGraph implements Graph {
 		
 		for (Vertex curVertex: vertices) {
 			curVertex.setPath(null);
-			curVertex.setKnown(false);
 			if(curVertex.getLabel().equals(start.getLabel())) {
 				curVertex.setDistance(0);
-				vList.add(curVertex);
 			}
+			vList.add(curVertex);
 		}
 		
 		while(!vList.isEmpty()) {
 			Vertex v = smallestDist(vList);
 			if(v == null) {
-				
+				// throw error
 			}
 			vList.remove(v);
 			v.setKnown(true);

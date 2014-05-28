@@ -28,7 +28,7 @@ public class Vertex {
 		this.cost = Integer.MAX_VALUE;
 		this.known = false;
 		this.path = path;
-		this. distance = distance;
+		this.distance = distance;
 	}
 
 	/**
