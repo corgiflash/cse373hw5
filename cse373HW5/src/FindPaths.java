@@ -49,11 +49,12 @@ public class FindPaths {
 				System.out.println("Shortest path from "+a.getLabel() + " to "+b.getLabel()+":");
 				
 				// Only one thing to print if start and end are equal
-				if (shortestPath.vertices.size() == 1) {
+				if (a.getLabel().equals(b.getLabel())) {
 					System.out.print(a.getLabel());
 					
 				// Print through path list backwards to get correct order in output
 				} else {
+					System.out.print(a.getLabel());
 					for (int i = shortestPath.vertices.size() - 1; i >= 0; i--) {
 						Vertex myVertex = shortestPath.vertices.get(i);
 						

@@ -17,17 +17,23 @@ public class MyGraph implements Graph {
 	 *            a collection of the vertices in this graph
 	 * @param e
 	 *            a collection of the edges in this graph
+	 * @throws NegativeWeightException
+	 * 			  if an edge has a negative weight
+	 * @throws IncorrectVertexException
+	 * 			  if an input collection of vertices has a problem
+	 * @throws IncorrectEdgeException
+	 * 			  if an input collection of edges has a problem
 	 */
 	public MyGraph(Collection<Vertex> v, Collection<Edge> e) {
 		// Check for erroneous data first
 		for (Edge curEdge : e) {
 			// Checking negative weights
 			if (curEdge.getWeight() < 0) {
-				// Throw negative error
+				throw new NegativeWeightException();
 				
 			// Check for valid destinations and sources
 			} else if (!v.contains(curEdge.getDestination()) || !v.contains(curEdge.getSource())) {
-				// Throw missing vertex error
+				throw new IncorrectVertexException();
 				
 			// Check if any edges have conflicting weights
 			} else {
@@ -35,7 +41,7 @@ public class MyGraph implements Graph {
 					if (anyEdge.getDestination().equals(curEdge.getDestination())
 							&& anyEdge.getSource().equals(curEdge.getSource())
 							&& anyEdge.getWeight() != curEdge.getWeight()) {
-						// Throw conflicting edge error
+						throw new IncorrectEdgeException();
 					}
 				}
 			}
@@ -88,7 +94,7 @@ public class MyGraph implements Graph {
 	 * 
 	 * @return the vertices as a collection (which is anything iterable)
 	 */
-	@Override
+	
 	public Collection<Vertex> vertices() {
 		// Create and return a copy of the vertices to preserve the local copy
 		Collection<Vertex> verticesCopy = new ArrayList<Vertex>();
@@ -103,7 +109,7 @@ public class MyGraph implements Graph {
 	 * 
 	 * @return the edges as a collection (which is anything iterable)
 	 */
-	@Override
+	
 	public Collection<Edge> edges() {
 		// Create and return a copy of the edges to preserve local copy
 		Collection<Edge> edgesCopy = new ArrayList<Edge>();
@@ -124,7 +130,7 @@ public class MyGraph implements Graph {
 	 * @throws IllegalArgumentException
 	 *             if v does not exist.
 	 */
-	@Override
+	
 	public Collection<Vertex> adjacentVertices(Vertex v) {
 		// Throw an error if the vertex does not exist
 		if (!adjacentVertices.containsKey(v)) {
@@ -148,18 +154,18 @@ public class MyGraph implements Graph {
 	 * @throws IllegalArgumentException
 	 *             if a or b do not exist.
 	 */
-	@Override
+	
 	public int edgeCost(Vertex a, Vertex b) {
 		// Make sure vertices exist
 		if (!vertices.contains(a) || !vertices.contains(b)) {
 			throw new IllegalArgumentException();
 		}
 		// Initialize the cost
-		int cost = 0;
+		int cost = -1;
 		
 		// Make sure that b is adjacent to a
 		if (!adjacentVertices.get(a).contains(b)) {
-			// Return default value of cost, 0
+			// Return default value of cost, -1
 			return cost;
 		
 		// Analyze list of edges to find the correct edge.
@@ -224,6 +230,7 @@ public class MyGraph implements Graph {
 		while(!temp.equals(a)) {
 			// Return a null path if there is a dead end
 			if(temp.getPath() == null) {
+				resetVertices();
 				return null;
 			}
 			// Add the vertex to the shortest path
@@ -237,42 +244,63 @@ public class MyGraph implements Graph {
 		int pathLen = b.getDistance();
 		
 		// Reset all vertex fields for the next runthrough
-		for (Vertex curVertex : vertices) {
-			curVertex.setCost(Integer.MAX_VALUE);
-			curVertex.setDistance(Integer.MAX_VALUE);
-			curVertex.setKnown(false);
-			curVertex.setPath(null);
-		}
+		resetVertices();
 		
 		// Create a new path and return it
 		return new Path(shortList, pathLen);
 	}
 	
+	
+	/**
+	 * Runs dijkstra's algorithm on a list of vertices to find
+	 * the shortest path
+	 * 
+	 * @param start
+	 *            The start vertex in a graph of vertices to analyze
+	 */
 	private void dijkstra (Vertex start) {
+		// List of unknown vertices
 		Collection<Vertex> vList = new ArrayList<Vertex>();
 		
+		// Find the start vertex in the list of vertices
 		for (Vertex curVertex: vertices) {
 			curVertex.setPath(null);
 			if(curVertex.getLabel().equals(start.getLabel())) {
+				// Set distance to zero
 				curVertex.setDistance(0);
 			}
+			// Add every vertex to the unknown list
 			vList.add(curVertex);
 		}
-		
-		while(!vList.isEmpty()) {
+		boolean deadEnd = false;
+		// Analyze until all nodes are known
+		while(!vList.isEmpty() && !deadEnd) {
+			// Choose the least costly option at the time
 			Vertex v = smallestDist(vList);
-			if(v == null) {
-				// throw error
-			}
-			vList.remove(v);
-			v.setKnown(true);
-			for(Vertex w : adjacentVertices.get(v)) {
-				if(!w.getKnown()) {
-					int costVW = edgeCost(v,w);
+			
+			if (v == null) {
+				deadEnd = true;
+			} else {
+				// Set node to known and remove it form the list
+				v.setKnown(true);
+				vList.remove(v);
+	
+				// Check all of the adjacent vertices and calculate
+				// the current cost
+				for(Vertex adjVertex : adjacentVertices.get(v)) {
 					
-					if((v.getDistance() + costVW) < w.getDistance()) {
-						w.setDistance(v.getDistance() + costVW);
-						w.setPath(v);
+					// Only check unknown vertices
+					if(!adjVertex.getKnown()) {
+						
+						// Cost of going from the current vertex to the unknown adjacent vertex
+						int tempCost = edgeCost(v,adjVertex);
+						
+						// Update the minimum cost and lest expensive path of the node if it is lower
+						// than what it was previously
+						if((v.getDistance() + tempCost) < adjVertex.getDistance()) {
+							adjVertex.setDistance(v.getDistance() + tempCost);
+							adjVertex.setPath(v);
+						}
 					}
 				}
 			}
@@ -280,7 +308,14 @@ public class MyGraph implements Graph {
 	
 	}
 	
-	// Returns the vertex from the given vertex list that is shortest distance away
+	/**
+	 * Returns the vertex from the given vertex list that has the shortest distance
+	 * 
+	 * @param vList
+	 *            A list of vertices to check for a minimum distance
+	 * @return v
+	 * 			  a vertex that is the minimum distance away from the current vertex
+	 */
 	private Vertex smallestDist (Collection<Vertex> vList) {
     	int min = Integer.MAX_VALUE;
 		Vertex v = null;
@@ -292,4 +327,40 @@ public class MyGraph implements Graph {
 		}
     	return v;
 	}
+	
+	/**
+	 * Reset all vertex fields for the next runthrough
+	 */
+	private void resetVertices() {
+		for (Vertex curVertex : vertices) {
+			curVertex.setCost(Integer.MAX_VALUE);
+			curVertex.setDistance(Integer.MAX_VALUE);
+			curVertex.setKnown(false);
+			curVertex.setPath(null);
+		}
+	}
+	
+	/**
+	 * Thrown when an input collection of edges has a problem
+	 */
+	private class IncorrectEdgeException extends RuntimeException {
+		public IncorrectEdgeException() {
+    	}
+    }
+	
+	/**
+	 * Thrown when an input collection of vertices has a problem
+	 */
+	private class IncorrectVertexException extends RuntimeException {
+		public IncorrectVertexException() {
+    	}
+    }
+	
+	/**
+	 * Thrown when an edge has a negative weight during graph construction
+	 */
+	private class NegativeWeightException extends RuntimeException {
+		public NegativeWeightException() {
+    	}
+    }
 }

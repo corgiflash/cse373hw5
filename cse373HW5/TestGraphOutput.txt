@@ -1,0 +1,45 @@
+Got errors reading test 3, Good!
+Vertices are [A, B, C]
+Edges are [<A, B, 10>, <B, A, 5>, <B, C, 20>, <A, C, 10>, <C, A, 2>]
+Start vertex? (exit for next test/quit) A
+Destination vertex? B
+Shortest path from A to B:
+A B
+10
+Start vertex? (exit for next test/quit) A
+Destination vertex? A
+Shortest path from A to A:
+A
+0
+Start vertex? (exit for next test/quit) B
+Destination vertex? C
+Shortest path from B to C:
+B A C
+15
+Start vertex? (exit for next test/quit) exit
+Vertices are [A, B, C, D]
+Edges are [<A, B, 10>, <B, A, 5>, <B, C, 20>, <A, C, 10>, <C, A, 2>, <D, A, 1>]
+Start vertex? (exit for next test/quit) A
+Destination vertex? B
+Shortest path from A to B:
+A B
+10
+Start vertex? (exit for next test/quit) D
+Destination vertex? A
+Shortest path from D to A:
+D A
+1
+Start vertex? (exit for next test/quit) D
+Destination vertex? D
+Shortest path from D to D:
+D
+0
+Start vertex? (exit for next test/quit) A
+Destination vertex? D
+does not exist
+Start vertex? (exit for next test/quit) B
+Destination vertex? C
+Shortest path from B to C:
+B A C
+15
+Start vertex? (exit for next test/quit) exit

@@ -4,9 +4,17 @@
 public class Vertex {
 	// label attached to this vertex
 	private String label;
+	
+	// current minimum cost to get to this vertex
 	private int cost;
+	
+	// Whether this node is known or not
 	private boolean known;
+	
+	// Node to travel through to find the shortest path
 	private Vertex path;
+	
+	// Distance in the shortest path to get to this point
 	private int distance;
 
 	/**
@@ -21,14 +29,32 @@ public class Vertex {
 	}
 	
 
+	/**
+	 * Construct a new vertex
+	 * 
+	 * @param label
+	 *            the label attached to this vertex
+	 * @param path
+	 *            node to travel through to find the shortest path
+	 * @param distance
+	 *            distance in the shortest path to get to this point
+	 */
 	public Vertex(String label, Vertex path, int distance) {
 		if (label == null)
 			throw new IllegalArgumentException("null");
 		this.label = label;
+		
+		// Set cost to infinity
 		this.cost = Integer.MAX_VALUE;
+		
+		// Node is unknown at creation
 		this.known = false;
-		this.path = path;
+		
+		// Distance in the shortest path to get to this point
 		this.distance = distance;
+		
+		// Node to travel through to find the shortest path
+		this.path = path;
 	}
 
 	/**
@@ -40,35 +66,66 @@ public class Vertex {
 		return label;
 	}
 	
+	/**
+	 * Get a vertex cost
+	 * 
+	 * @return the cost to get to this vertex
+	 */
 	public int getCost() {
 		return cost;
 	}
 	
+	/**
+	 * Get known state
+	 * 
+	 * @return whether the vertex is known or not
+	 */
 	public boolean getKnown() {
 		return known;
 	}
 	
+	/**
+	 * Get a vertex path
+	 * 
+	 * @return the cheapest path node for the vertex
+	 */
 	public Vertex getPath() {
 		return path;
 	}
 	
+	/**
+	 * Get a vertex distance
+	 * 
+	 * @return the distance in the shortest path to get to the vertex
+	 */
 	public int getDistance() {
 		return distance;
 	}
 	
-	
+	/**
+	 * Set a vertex cost
+	 */
 	public void setCost(int newCost) {
 		cost = newCost;
 	}
 	
+	/**
+	 * Set known state
+	 */
 	public void setKnown(boolean newKnown) {
 		known = newKnown;
 	}
 	
+	/**
+	 * Set vertex path
+	 */
 	public void setPath(Vertex newPath) {
 		path = newPath;
 	}	
-
+	
+	/**
+	 * Set vertex distance
+	 */
 	public void setDistance(int newDistance) {
 		distance = newDistance;
 	}
